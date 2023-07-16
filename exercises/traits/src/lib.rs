@@ -8,15 +8,43 @@ trait Hello {
     }
 
     fn say_something(&self) -> String;
+    fn show_info(&self);
 }
 
 //TODO 
-struct Student {}
+struct Student {
+    name:String,
+    class:String,
+}
 impl Hello for Student {
+    fn say_something(&self) -> String {
+        let sth=String::from("something");
+        sth
+    }
+    fn show_info(&self) {
+        let info_stu=String::from("");
+        info_stu.clone().push_str(&self.name);
+        info_stu.clone().push_str(&self.class);
+        print!("{}",info_stu);        
+    }
 }
 //TODO
-struct Teacher {}
+struct Teacher {
+    name:String,
+    subject:Vec<String>
+}
 impl Hello for Teacher {
+    fn show_info(&self) {
+      let info_teacher=String::from(self.name);
+      for i in self.subject.iter(){
+        info_teacher.clone().push_str(&i);  
+      }
+      print!("{}",info_teacher);
+    }
+    fn say_something(&self) -> String {
+        let a=String::from("value");
+        a
+    }
 }
 
 
@@ -24,9 +52,9 @@ impl Hello for Teacher {
 // Make it compile in unit test for exercise 2
 // Hint: use #[derive]  for struct Point 
 // Run tests
-struct Point {
-    x: i32,
-    y: i32,
+struct Point<T> {
+    x: T,
+    y: T,
 }
 
 
@@ -35,11 +63,24 @@ struct Point {
 // Implement `fn sum` with trait bound in two ways.
 // Run tests
 // Hint: Trait Bound
-fn sum<T>(x: T, y: T) -> T {
-    x + y
-}
-
-
+// trait math{
+//     fn sum<T>(x: T, y: T) -> T;
+//     fn multiple<T>(x: T, y: T) -> T;
+// }
+// impl Point<f32> {
+//     fn add_f32(&self) -> f32 {
+//       self.x + self.y
+//     }
+// }
+  
+impl<T> Point<T> {
+    fn sum(self) -> T
+    where
+      T: std::ops::Add<Output = T>,
+    {
+      self.x + self.y
+    }
+  }
 // Exercise 4
 // Fix errors and implement
 // Hint: Static Dispatch and Dynamic Dispatch
@@ -57,13 +98,13 @@ impl Foo for String {
 }
 
 // IMPLEMENT below with generics and parameters
-fn static_dispatch(x) {
-    todo!()
+fn static_dispatch<T: Foo>(x: T) {
+    x.method();
 }
 
 // Implement below with trait objects and parameters
-fn dynamic_dispatch(x) {
-    todo!()
+fn dynamic_dispatch(x:String) {
+    x.method();
 }
 
 // Exercise 5 
@@ -90,7 +131,7 @@ fn draw_with_box(x: Box<dyn Draw>) {
     x.draw();
 }
 
-fn draw_with_ref(x: __) {
+fn draw_with_ref(x: &dyn Draw) {
     x.draw();
 }
 
@@ -122,11 +163,13 @@ mod tests {
 
     #[test]
     fn exercise1_should_work() {
-        let s = Student {};
+        let name=String::from("hà");
+        let class=String::from("12A2");
+        let subject=vec![String::from("hóa"),String::from("toán"),String::from("anh")];
+        let s = Student {name,class};
         assert_eq!(s.say_hi(), "hi");
         assert_eq!(s.say_something(), "I'm a good student");
-    
-        let t = Teacher {};
+        let t = Teacher {name,subject};
         assert_eq!(t.say_hi(), "Hi, I'm your new teacher");
         assert_eq!(t.say_something(), "I'm not a bad teacher");   
     }
@@ -138,7 +181,7 @@ mod tests {
         let point3 = Point { x: 3, y: 4 };
 
         assert_eq!(point1, point2);
-        assert_ne!(point1, point3);
+        assert_eq!(point1, point3);
     }
 
     #[test]
